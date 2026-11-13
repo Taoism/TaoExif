@@ -8,13 +8,22 @@ implementation in C# / .NET 10 with [Avalonia 12](https://avaloniaui.net/), and 
 
 ## Download
 
-Get the latest build from [Releases](https://github.com/Taoism/TaoExif/releases). Unpack it anywhere and run
-`TaoExif` (`TaoExif.exe` on Windows). ExifTool is included, so you don't need to install anything else.
+Get the latest build from [Releases](https://github.com/Taoism/TaoExif/releases). ExifTool is included in every
+package.
 
-- **Windows x64**: `TaoExif-<version>-win-x64.zip`
-- **Linux x64**: `TaoExif-<version>-linux-x64.tar.gz` (needs `perl` for the bundled ExifTool; see below)
-- **macOS Apple silicon**: `TaoExif-<version>-osx-arm64.tar.gz`. The build is not signed, so the first time,
-  open it with right-click → Open, or run `xattr -dr com.apple.quarantine TaoExif`.
+| Platform | File | How to install |
+|---|---|---|
+| Windows 10/11 | `TaoExif-<v>-setup-win-x64.exe` | Run the installer. It installs per user, or for all users if you choose that, and can add "Open in TaoExif" to folder right-click menus. |
+| Windows, portable | `TaoExif-<v>-win-x64.zip` | Unzip anywhere and run `TaoExif.exe`. |
+| Ubuntu / Debian | `taoexif_<v>_amd64.deb` | `sudo apt install ./taoexif_<v>_amd64.deb`, then start TaoExif from the menu or run `taoexif`. |
+| Other Linux | `TaoExif-<v>-linux-x64.tar.gz` | Unpack and run `./TaoExif`. The bundled ExifTool needs `perl`. |
+| macOS, Apple silicon | `TaoExif-<v>-macos-arm64.zip` | Unzip and move `TaoExif.app` to Applications. |
+| macOS, Intel | `TaoExif-<v>-macos-x64.zip` | Same as above. |
+
+The macOS app isn't notarized. The first time, right-click it and choose **Open**, or run
+`xattr -dr com.apple.quarantine /Applications/TaoExif.app`.
+
+To build all of these yourself, run `./build-release.ps1` (Windows with Inno Setup 6 and WSL).
 
 ## Features
 

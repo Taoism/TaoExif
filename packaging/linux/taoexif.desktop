@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=TaoExif
+GenericName=Metadata Editor
+Comment=View and edit photo metadata with ExifTool
+Exec=taoexif %f
+Icon=taoexif
+Terminal=false
+Categories=Graphics;Photography;Viewer;
+Keywords=exif;exiftool;metadata;gps;xmp;iptc;photo;
+StartupWMClass=TaoExif
