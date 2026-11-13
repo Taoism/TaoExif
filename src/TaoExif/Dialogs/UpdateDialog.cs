@@ -65,14 +65,5 @@ public sealed class UpdateDialog : DialogWindow
         return Task.FromResult(true);
     }
 
-    /// <summary>Release notes are Markdown; strip the table and heading syntax for a plain read.</summary>
-    internal static string TrimNotes(string markdown)
-    {
-        var lines = markdown.Replace("\r", "").Split('\n')
-            .Where(l => !l.TrimStart().StartsWith("|---", StringComparison.Ordinal))
-            .Select(l => l.TrimStart('#', ' ').Replace("**", "").Replace("`", ""))
-            .Select(l => l.StartsWith('|') ? string.Join("  ·  ", l.Trim('|').Split('|').Select(c => c.Trim()).Where(c => c.Length > 0)) : l);
-        string text = string.Join("\n", lines).Trim();
-        return text.Length > 4000 ? text[..4000] + "…" : text;
-    }
+    private static string TrimNotes(string markdown) => UpdateChecker.PlainNotes(markdown);
 }

@@ -23,6 +23,20 @@ public sealed class UpdateManager
     /// <summary>A verified installer waiting to run when TaoExif closes (Install mode).</summary>
     public string? PendingInstaller { get; private set; }
 
+    /// <summary>Deletes installers left over from an update that has already been installed.</summary>
+    public static void CleanStaging()
+    {
+        try
+        {
+            if (Directory.Exists(StagingFolder))
+                Directory.Delete(StagingFolder, true);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+    }
+
     public static bool IsDue(AppSettings s) =>
         s.UpdateMode != "Off" && (s.LastUpdateCheck is not { } last || DateTime.UtcNow - last > CheckInterval);
 

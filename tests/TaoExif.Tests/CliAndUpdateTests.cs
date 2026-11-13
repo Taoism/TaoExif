@@ -84,6 +84,13 @@ public class CliArgsTests
 
 public class UpdateTests
 {
+    [Fact]
+    public void NotesLoseMarkdown()
+    {
+        string t = UpdateChecker.PlainNotes("### New\n- **Bold** and *Off* or `code`, 2*3*4\n|---|---|\n| a | b |");
+        Assert.Equal("New\n- Bold and Off or code, 2*3*4\na  ·  b", t);
+    }
+
     private const string ReleaseJson = """
         {"tag_name":"v0.3.2","name":"TaoExif 0.3.2","html_url":"https://github.com/Taoism/TaoExif/releases/tag/v0.3.2","body":"notes",
          "assets":[

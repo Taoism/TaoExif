@@ -15,6 +15,7 @@ public sealed partial class MainWindow
     /// <summary>Background check at startup, at most about once a day, unless updates are off.</summary>
     private async Task AutoCheckUpdatesAsync()
     {
+        UpdateManager.CleanStaging();
         if (!UpdateManager.IsDue(_settings))
             return;
         ReleaseInfo? release;

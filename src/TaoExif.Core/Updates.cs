@@ -92,6 +92,20 @@ public sealed class UpdateChecker
         return false;
     }
 
+    private static readonly System.Text.RegularExpressions.Regex Italics =
+        new(@"(?<![\w*])\*([^*]+)\*(?![\w*])", System.Text.RegularExpressions.RegexOptions.None, TimeSpan.FromSeconds(1));
+
+    /// <summary>Release notes are Markdown; strip headings, emphasis, code marks and table rules for a plain read.</summary>
+    public static string PlainNotes(string markdown)
+    {
+        var lines = markdown.Replace("\r", "").Split('\n')
+            .Where(l => !l.TrimStart().StartsWith("|---", StringComparison.Ordinal))
+            .Select(l => Italics.Replace(l.TrimStart('#', ' ').Replace("**", "").Replace("`", ""), "$1"))
+            .Select(l => l.StartsWith('|') ? string.Join("  ·  ", l.Trim('|').Split('|').Select(c => c.Trim()).Where(c => c.Length > 0)) : l);
+        string text = string.Join("\n", lines).Trim();
+        return text.Length > 4000 ? text[..4000] + "…" : text;
+    }
+
     public static bool IsNewer(Version candidate, Version current) =>
         candidate > new Version(current.Major, current.Minor, Math.Max(0, current.Build));
 
