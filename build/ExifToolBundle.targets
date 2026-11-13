@@ -1,0 +1,45 @@
+<Project>
+  <!--
+    Bundles ExifTool with the app in an "exiftool" folder next to the executable:
+      Windows targets      third_party/exiftool/win   (exiftool.exe + exiftool_files, includes Perl)
+      Linux/macOS targets  third_party/exiftool/unix  (Perl distribution, run with the system perl)
+    third_party/exiftool is downloaded by tools/fetch-exiftool.ps1 (checksum-verified) when missing.
+    Set TaoExifBundleExifTool=false to build without it.
+  -->
+  <PropertyGroup>
+    <TaoExifBundleExifTool Condition="'$(TaoExifBundleExifTool)' == ''">true</TaoExifBundleExifTool>
+    <ExifToolBundleDir>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)', '..', 'third_party', 'exiftool'))</ExifToolBundleDir>
+    <ExifToolFetchScript>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)', '..', 'tools', 'fetch-exiftool.ps1'))</ExifToolFetchScript>
+  </PropertyGroup>
+
+  <Target Name="TaoExifFetchExifTool" BeforeTargets="AssignTargetPaths"
+          Condition="'$(TaoExifBundleExifTool)' == 'true' and !Exists('$(ExifToolBundleDir)VERSION')">
+    <PropertyGroup>
+      <_PowerShell Condition="$([MSBuild]::IsOSPlatform('Windows'))">powershell.exe -NoProfile -ExecutionPolicy Bypass</_PowerShell>
+      <_PowerShell Condition="!$([MSBuild]::IsOSPlatform('Windows'))">pwsh -NoProfile</_PowerShell>
+    </PropertyGroup>
+    <Message Importance="high" Text="Downloading ExifTool for bundling…" />
+    <Exec Command="$(_PowerShell) -File &quot;$(ExifToolFetchScript)&quot;" />
+  </Target>
+
+  <Target Name="TaoExifAddExifTool" BeforeTargets="AssignTargetPaths" AfterTargets="TaoExifFetchExifTool"
+          Condition="'$(TaoExifBundleExifTool)' == 'true'">
+    <PropertyGroup>
+      <_ExifToolFlavor Condition="$(RuntimeIdentifier.StartsWith('win'))">win</_ExifToolFlavor>
+      <_ExifToolFlavor Condition="'$(_ExifToolFlavor)' == '' and '$(RuntimeIdentifier)' != ''">unix</_ExifToolFlavor>
+      <_ExifToolFlavor Condition="'$(_ExifToolFlavor)' == '' and $([MSBuild]::IsOSPlatform('Windows'))">win</_ExifToolFlavor>
+      <_ExifToolFlavor Condition="'$(_ExifToolFlavor)' == ''">unix</_ExifToolFlavor>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(ExifToolBundleDir)$(_ExifToolFlavor)')"
+           Text="ExifTool bundle missing: run tools/fetch-exiftool.ps1, or build with -p:TaoExifBundleExifTool=false" />
+    <ItemGroup>
+      <_ExifToolFile Include="$(ExifToolBundleDir)$(_ExifToolFlavor)\**\*" />
+      <_ExifToolFile Include="$(ExifToolBundleDir)VERSION;$(ExifToolBundleDir)README" />
+      <None Include="@(_ExifToolFile)"
+            Link="exiftool\%(_ExifToolFile.RecursiveDir)%(_ExifToolFile.Filename)%(_ExifToolFile.Extension)"
+            CopyToOutputDirectory="PreserveNewest"
+            CopyToPublishDirectory="PreserveNewest"
+            ExcludeFromSingleFile="true" />
+    </ItemGroup>
+  </Target>
+</Project>

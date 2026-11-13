@@ -1,0 +1,35 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TaoExif.App"
+             RequestedThemeVariant="Dark">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://TaoExif/Theme/Colors.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+  <Application.Styles>
+    <FluentTheme>
+      <FluentTheme.Palettes>
+        <ColorPaletteResources x:Key="Dark"
+                               Accent="#FF3D7FD6"
+                               RegionColor="#FF1B1C1F"
+                               AltHigh="#FF1B1C1F"
+                               ChromeMediumLow="#FF26282C"
+                               ChromeMedium="#FF2C2E33"
+                               ChromeLow="#FF202226"
+                               ChromeHigh="#FF3A3D43"
+                               BaseHigh="#FFE8E8EA"
+                               BaseMediumHigh="#FFC8C9CC"
+                               BaseMedium="#FF9A9CA1"
+                               BaseLow="#FF34363B"
+                               BaseMediumLow="#FF55575D"
+                               ListLow="#FF2A2D33"
+                               ListMedium="#FF33363D" />
+      </FluentTheme.Palettes>
+    </FluentTheme>
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+    <StyleInclude Source="avares://TaoExif/Theme/Styles.axaml" />
+  </Application.Styles>
+</Application>

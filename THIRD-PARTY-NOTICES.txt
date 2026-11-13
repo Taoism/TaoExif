@@ -1,0 +1,16 @@
+TaoExif bundles and uses third-party software.
+
+ExifTool (https://exiftool.org/)
+  Copyright (c) 2003-2026 Phil Harvey.
+  This is free software; you can redistribute it and/or modify it under the same terms as Perl itself
+  (the Artistic License or the GNU General Public License, version 1 or later).
+  Shipped unmodified in the "exiftool" folder next to TaoExif: the official Windows package
+  (exiftool.exe with its bundled Perl in exiftool_files) on Windows, and the Image-ExifTool
+  Perl distribution (exiftool + lib) on Linux and macOS.
+
+Avalonia (https://avaloniaui.net/) - MIT License, Copyright (c) AvaloniaUI OÜ and contributors.
+CommunityToolkit.Mvvm - MIT License, Copyright (c) .NET Foundation and Contributors.
+SkiaSharp / HarfBuzzSharp - MIT License, Copyright (c) Microsoft Corporation / .NET Foundation.
+Inter font - SIL Open Font License 1.1, Copyright (c) The Inter Project Authors.
+
+Map tiles and data (c) OpenStreetMap contributors, ODbL (https://www.openstreetmap.org/copyright).

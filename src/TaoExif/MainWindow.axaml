@@ -1,0 +1,314 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TaoExif.ViewModels"
+        xmlns:c="using:TaoExif.Controls"
+        xmlns:local="using:TaoExif"
+        x:Class="TaoExif.MainWindow"
+        Title="TaoExif"
+        Width="1400" Height="860" MinWidth="900" MinHeight="560">
+
+  <Window.Resources>
+    <StreamGeometry x:Key="IconFolder">M3 5.5A1.5 1.5 0 0 1 4.5 4h4.6l2 2H19.5A1.5 1.5 0 0 1 21 7.5v11a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5Z</StreamGeometry>
+    <StreamGeometry x:Key="IconUp">M12 4 5 11h4.5v9h5v-9H19Z</StreamGeometry>
+    <StreamGeometry x:Key="IconRefresh">M17.6 6.4A8 8 0 1 0 20 12h-2.2a5.8 5.8 0 1 1-1.7-4.1L13 11h7V4Z</StreamGeometry>
+    <StreamGeometry x:Key="IconList">M4 5h16v2H4Zm0 6h16v2H4Zm0 6h16v2H4Z</StreamGeometry>
+    <StreamGeometry x:Key="IconGrid">M4 4h7v7H4Zm9 0h7v7h-7ZM4 13h7v7H4Zm9 0h7v7h-7Z</StreamGeometry>
+    <StreamGeometry x:Key="IconSave">M5 3h11l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 2v5h9V5Zm5 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6Z</StreamGeometry>
+  </Window.Resources>
+
+  <DockPanel>
+    <Menu DockPanel.Dock="Top" Padding="4,2">
+      <MenuItem Header="_File">
+        <MenuItem Header="_Open folder…" InputGesture="Ctrl+O" Click="OnOpenFolder" />
+        <MenuItem x:Name="RecentMenu" Header="Recent folders" />
+        <MenuItem Header="_Refresh" InputGesture="F5" Click="OnRefresh" />
+        <Separator />
+        <MenuItem Header="Export metadata of selection (CSV)…" Click="OnExportCsv" />
+        <MenuItem Header="Export metadata of selection (JSON)…" Click="OnExportJson" />
+        <Separator />
+        <MenuItem Header="E_xit" Click="OnExit" />
+      </MenuItem>
+      <MenuItem Header="_Edit">
+        <MenuItem Header="Select _all files" InputGesture="Ctrl+A" Click="OnSelectAll" />
+        <Separator />
+        <MenuItem Header="File list _columns…" Click="OnEditColumns" />
+        <MenuItem Header="_Workspace fields…" Click="OnEditWorkspace" />
+        <MenuItem Header="Command _presets…" Click="OnEditPresets" />
+        <Separator />
+        <MenuItem Header="_Settings…" Click="OnSettings" />
+      </MenuItem>
+      <MenuItem Header="_View">
+        <MenuItem x:Name="DetailsMenu" Header="_Details" Click="OnDetailsView" ToggleType="Radio" GroupName="view" />
+        <MenuItem x:Name="ThumbsMenu" Header="_Thumbnails" Click="OnThumbView" ToggleType="Radio" GroupName="view" />
+        <Separator />
+        <MenuItem x:Name="SubfoldersMenu" Header="Include _subfolders" Click="OnToggleSubfolders" ToggleType="CheckBox" />
+        <MenuItem x:Name="AllFilesMenu" Header="Show _all file types" Click="OnToggleAllFiles" ToggleType="CheckBox" />
+      </MenuItem>
+      <MenuItem Header="_Tools">
+        <MenuItem Header="_Shift date/time…" Click="OnShiftDates" />
+        <MenuItem Header="_Rename files…" Click="OnRename" />
+        <Separator />
+        <MenuItem Header="_Copy metadata from file…" Click="OnCopyMetadata" />
+        <MenuItem Header="Re_move metadata…" Click="OnRemoveMetadata" />
+        <Separator />
+        <MenuItem Header="_Geotag from track log…" Click="OnGeotag" />
+        <MenuItem Header="Remove _GPS" Click="OnRemoveGps" />
+        <Separator />
+        <MenuItem Header="Delete _backup files (*_original)" Click="OnDeleteBackups" />
+      </MenuItem>
+      <MenuItem Header="_Help">
+        <MenuItem Header="exiftool tag _names (web)" Click="OnTagNamesHelp" />
+        <MenuItem Header="_About TaoExif" Click="OnAbout" />
+      </MenuItem>
+    </Menu>
+
+    <!-- toolbar -->
+    <Border DockPanel.Dock="Top" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource EdgeBrush}" BorderThickness="0,1" Padding="8,6">
+      <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto" ColumnSpacing="6">
+        <Button Grid.Column="0" ToolTip.Tip="Open folder (Ctrl+O)" AutomationProperties.Name="Open folder" Click="OnOpenFolder">
+          <PathIcon Data="{StaticResource IconFolder}" Width="16" Height="16" />
+        </Button>
+        <Button Grid.Column="1" ToolTip.Tip="Parent folder (Alt+Up)" AutomationProperties.Name="Parent folder" Click="OnFolderUp">
+          <PathIcon Data="{StaticResource IconUp}" Width="16" Height="16" />
+        </Button>
+        <Button Grid.Column="2" ToolTip.Tip="Refresh (F5)" AutomationProperties.Name="Refresh" Click="OnRefresh">
+          <PathIcon Data="{StaticResource IconRefresh}" Width="16" Height="16" />
+        </Button>
+        <TextBox Grid.Column="3" x:Name="PathBox" PlaceholderText="Folder path" KeyDown="OnPathKeyDown" />
+        <TextBox Grid.Column="4" x:Name="FilterBox" PlaceholderText="Filter names" Width="180" TextChanged="OnFilterChanged" />
+        <ToggleButton Grid.Column="5" x:Name="DetailsToggle" ToolTip.Tip="Details" AutomationProperties.Name="Details view" Click="OnDetailsView">
+          <PathIcon Data="{StaticResource IconList}" Width="16" Height="16" />
+        </ToggleButton>
+        <ToggleButton Grid.Column="6" x:Name="ThumbsToggle" ToolTip.Tip="Thumbnails" AutomationProperties.Name="Thumbnail view" Click="OnThumbView">
+          <PathIcon Data="{StaticResource IconGrid}" Width="16" Height="16" />
+        </ToggleButton>
+      </Grid>
+    </Border>
+
+    <!-- status bar -->
+    <Border DockPanel.Dock="Bottom" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource EdgeBrush}" BorderThickness="0,1,0,0" Padding="10,4">
+      <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="14">
+        <TextBlock x:Name="StatusText" Text="Ready" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+        <ProgressBar Grid.Column="1" x:Name="Busy" IsIndeterminate="True" Width="120" Height="4" IsVisible="False" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" x:Name="SelectionText" Classes="muted" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="3" x:Name="VersionText" Classes="muted" VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+
+    <!-- log -->
+    <Expander DockPanel.Dock="Bottom" x:Name="LogExpander" Header="Log" Padding="6,0,6,6" HorizontalAlignment="Stretch" Margin="6,0,6,4">
+      <TextBox x:Name="LogBox" Classes="mono" IsReadOnly="True" AcceptsReturn="True" Height="130" TextWrapping="NoWrap" />
+    </Expander>
+
+    <Grid x:Name="MainGrid" Margin="6">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="240" MinWidth="140" />
+        <ColumnDefinition Width="6" />
+        <ColumnDefinition Width="*" MinWidth="260" />
+        <ColumnDefinition Width="6" />
+        <ColumnDefinition Width="520" MinWidth="320" />
+      </Grid.ColumnDefinitions>
+
+      <!-- folder tree -->
+      <Border Classes="panel">
+        <TreeView x:Name="FolderTree" SelectionChanged="OnFolderSelected" BorderThickness="0">
+          <TreeView.Styles>
+            <Style Selector="TreeViewItem" x:DataType="vm:FolderNode">
+              <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+            </Style>
+          </TreeView.Styles>
+          <TreeView.ItemTemplate>
+            <TreeDataTemplate x:DataType="vm:FolderNode" ItemsSource="{Binding Children}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <PathIcon Data="{StaticResource IconFolder}" Width="14" Height="14" Foreground="#FFC9A24A" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+              </StackPanel>
+            </TreeDataTemplate>
+          </TreeView.ItemTemplate>
+        </TreeView>
+      </Border>
+
+      <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
+
+      <!-- file list -->
+      <Border Grid.Column="2" Classes="panel">
+        <Panel>
+          <DataGrid x:Name="FileGrid" IsReadOnly="True" SelectionMode="Extended" AutoGenerateColumns="False"
+                    BorderThickness="0" SelectionChanged="OnFileSelectionChanged" DoubleTapped="OnFileDoubleTapped"
+                    CanUserSortColumns="True">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="230" x:DataType="vm:FileItem" />
+              <DataGridTextColumn Header="Size" Binding="{Binding SizeText}" Width="80" SortMemberPath="Size" x:DataType="vm:FileItem" />
+              <DataGridTextColumn Header="Modified" Binding="{Binding ModifiedText}" Width="130" SortMemberPath="Modified" x:DataType="vm:FileItem" />
+            </DataGrid.Columns>
+          </DataGrid>
+          <ListBox x:Name="ThumbList" IsVisible="False" SelectionMode="Multiple" BorderThickness="0"
+                   SelectionChanged="OnFileSelectionChanged" DoubleTapped="OnFileDoubleTapped"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.Styles>
+              <Style Selector="ListBoxItem">
+                <Setter Property="Padding" Value="4" />
+                <Setter Property="Margin" Value="2" />
+                <Setter Property="CornerRadius" Value="4" />
+              </Style>
+            </ListBox.Styles>
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:FileItem">
+                <StackPanel Width="150" Spacing="4">
+                  <Border Width="150" Height="112" Background="#FF17181B" CornerRadius="3" ClipToBounds="True">
+                    <LayoutTransformControl HorizontalAlignment="Center" VerticalAlignment="Center">
+                      <LayoutTransformControl.LayoutTransform>
+                        <RotateTransform Angle="{Binding Rotation}" />
+                      </LayoutTransformControl.LayoutTransform>
+                      <Image Source="{Binding Thumbnail}" MaxWidth="150" MaxHeight="150" Stretch="Uniform" />
+                    </LayoutTransformControl>
+                  </Border>
+                  <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" HorizontalAlignment="Center" FontSize="12" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <TextBlock x:Name="EmptyText" Classes="muted" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
+                     Text="Open a folder to start (File → Open folder, or pick one on the left)." TextWrapping="Wrap" Margin="20" />
+        </Panel>
+      </Border>
+
+      <GridSplitter Grid.Column="3" ResizeDirection="Columns" />
+
+      <!-- right side: preview + tabs -->
+      <Grid Grid.Column="4" x:Name="RightGrid">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="300" MinHeight="80" />
+          <RowDefinition Height="6" />
+          <RowDefinition Height="*" MinHeight="200" />
+        </Grid.RowDefinitions>
+        <Border Classes="panel" Background="#FF141518" ClipToBounds="True">
+          <Panel x:Name="PreviewPanel" Background="Transparent">
+            <LayoutTransformControl x:Name="PreviewTransform" HorizontalAlignment="Center" VerticalAlignment="Center">
+              <Image x:Name="PreviewImage" Stretch="Uniform" />
+            </LayoutTransformControl>
+            <TextBlock x:Name="PreviewText" Classes="muted" HorizontalAlignment="Center" VerticalAlignment="Center" Text="No preview" />
+          </Panel>
+        </Border>
+        <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+        <TabControl Grid.Row="2" x:Name="Tabs" SelectionChanged="OnTabChanged">
+
+          <!-- Metadata -->
+          <TabItem Header="Metadata">
+            <Grid RowDefinitions="Auto,*,Auto" RowSpacing="6">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                <TextBox x:Name="MetaFilter" PlaceholderText="Filter tags or values" TextChanged="OnMetaFilterChanged" />
+                <ComboBox Grid.Column="1" x:Name="MetaGroup" Width="140" SelectionChanged="OnMetaGroupChanged" />
+              </Grid>
+              <DataGrid Grid.Row="1" x:Name="MetaGrid" IsReadOnly="True" SelectionMode="Single" AutoGenerateColumns="False"
+                        SelectionChanged="OnMetaSelectionChanged" CanUserSortColumns="True">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Group" Binding="{Binding Group}" Width="130" x:DataType="vm:MetaRow" />
+                  <DataGridTextColumn Header="Tag" Binding="{Binding Name}" Width="170" x:DataType="vm:MetaRow" />
+                  <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*" x:DataType="vm:MetaRow" />
+                </DataGrid.Columns>
+                <DataGrid.ContextMenu>
+                  <ContextMenu>
+                    <MenuItem Header="Copy value" Click="OnMetaCopyValue" />
+                    <MenuItem Header="Copy tag name" Click="OnMetaCopyName" />
+                    <Separator />
+                    <MenuItem Header="Add as file list column" Click="OnMetaAddColumn" />
+                    <MenuItem Header="Add to workspace" Click="OnMetaAddWorkspace" />
+                  </ContextMenu>
+                </DataGrid.ContextMenu>
+              </DataGrid>
+              <Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
+                <TextBlock x:Name="MetaEditName" Classes="muted" VerticalAlignment="Center" MaxWidth="170" TextTrimming="CharacterEllipsis" Text="Select a tag" />
+                <TextBox Grid.Column="1" x:Name="MetaEditValue" IsEnabled="False" KeyDown="OnMetaEditKeyDown" />
+                <Button Grid.Column="2" x:Name="MetaSaveButton" Content="Write" Classes="accent" IsEnabled="False" Click="OnMetaWrite" ToolTip.Tip="Write this value into all selected files (Enter)" />
+                <Button Grid.Column="3" x:Name="MetaDeleteButton" Content="Delete" IsEnabled="False" Click="OnMetaDelete" ToolTip.Tip="Remove this tag from all selected files" />
+              </Grid>
+            </Grid>
+          </TabItem>
+
+          <!-- Workspace -->
+          <TabItem Header="Workspace">
+            <Grid RowDefinitions="*,Auto" RowSpacing="6">
+              <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl x:Name="WorkspaceList">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:WorkspaceRow">
+                      <Grid ColumnDefinitions="130,*" Margin="0,2" ColumnSpacing="8">
+                        <StackPanel VerticalAlignment="Center">
+                          <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                                     Foreground="{Binding IsModified, Converter={x:Static local:Converters.ModifiedBrush}}" />
+                          <TextBlock Text="{Binding Tag}" Classes="muted" FontSize="10.5" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <TextBox Grid.Column="1" Text="{Binding Value, Mode=TwoWay}" PlaceholderText="{Binding Hint}" />
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+              <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="6">
+                <Button Content="Fields…" Click="OnEditWorkspace" />
+                <TextBlock Grid.Column="1" x:Name="WorkspaceInfo" Classes="muted" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                <Button Grid.Column="2" Content="Revert" Click="OnWorkspaceRevert" />
+                <Button Grid.Column="3" x:Name="WorkspaceSave" Classes="accent" Click="OnWorkspaceSave" ToolTip.Tip="Write changed fields into all selected files (Ctrl+S)">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <PathIcon Data="{StaticResource IconSave}" Width="14" Height="14" Foreground="White" />
+                    <TextBlock Text="Save changes" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+            </Grid>
+          </TabItem>
+
+          <!-- Map -->
+          <TabItem Header="Map">
+            <Grid RowDefinitions="Auto,*,Auto" RowSpacing="6">
+              <Grid ColumnDefinitions="*,*,Auto,Auto,Auto" ColumnSpacing="6">
+                <TextBox x:Name="LatBox" PlaceholderText="Latitude" />
+                <TextBox Grid.Column="1" x:Name="LonBox" PlaceholderText="Longitude" />
+                <Button Grid.Column="2" Content="Go" Click="OnMapGo" ToolTip.Tip="Show these coordinates (paste &quot;lat, lon&quot; into Latitude)" />
+                <Button Grid.Column="3" Content="+" Width="32" Click="OnMapZoomIn" HorizontalContentAlignment="Center" />
+                <Button Grid.Column="4" Content="−" Width="32" Click="OnMapZoomOut" HorizontalContentAlignment="Center" />
+              </Grid>
+              <Border Grid.Row="1" Classes="panel" ClipToBounds="True">
+                <c:MapControl x:Name="Map" />
+              </Border>
+              <WrapPanel Grid.Row="2" Orientation="Horizontal">
+                <Button Content="Set location on selected" Classes="accent" Click="OnMapApply" Margin="0,0,6,4" ToolTip.Tip="Click the map (or type coordinates), then write them as GPS into the selected files" />
+                <Button Content="Remove GPS" Click="OnRemoveGps" Margin="0,0,6,4" />
+                <Button Content="Show selected" Click="OnMapShowSelected" Margin="0,0,6,4" />
+                <Button Content="Load track…" Click="OnMapLoadTrack" Margin="0,0,6,4" />
+                <Button Content="Geotag…" Click="OnGeotag" Margin="0,0,6,4" />
+                <CheckBox x:Name="GpsXmp" Content="Also XMP" IsChecked="True" Margin="0,0,6,4" />
+              </WrapPanel>
+            </Grid>
+          </TabItem>
+
+          <!-- Command -->
+          <TabItem Header="Command">
+            <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="6">
+              <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                <ComboBox x:Name="PresetBox" HorizontalAlignment="Stretch" PlaceholderText="Saved commands" SelectionChanged="OnPresetSelected" />
+                <Button Grid.Column="1" Content="Save as…" Click="OnPresetSave" />
+                <Button Grid.Column="2" Content="Edit…" Click="OnEditPresets" />
+              </Grid>
+              <TextBox Grid.Row="1" x:Name="CommandBox" Classes="mono" PlaceholderText="exiftool arguments, e.g. -G1 -s -time:all   or   &quot;-FileName&lt;CreateDate&quot; -d %Y%m%d_%H%M%S.%%e"
+                       AcceptsReturn="False" KeyDown="OnCommandKeyDown" />
+              <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="6">
+                <Button Content="Run on selected" Classes="accent" Click="OnRunSelected" ToolTip.Tip="Enter" />
+                <Button Content="Run on folder" Click="OnRunFolder" ToolTip.Tip="Pass the current folder instead of files" />
+                <Button Content="Run (no files)" Click="OnRunNoFiles" />
+                <Button Content="Clear" Click="OnCommandClear" />
+              </StackPanel>
+              <TextBox Grid.Row="3" x:Name="CommandOutput" Classes="mono" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" />
+            </Grid>
+          </TabItem>
+        </TabControl>
+      </Grid>
+    </Grid>
+  </DockPanel>
+</Window>
