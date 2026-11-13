@@ -48,7 +48,7 @@ public class DialogWindow : Window
 
         var footer = new Border
         {
-            Background = (IBrush)Application.Current!.FindResource("PanelBrush")!,
+            Classes = { "footer" },
             Padding = new Thickness(16, 12),
             Child = buttons,
         };
@@ -122,7 +122,7 @@ public class DialogWindow : Window
         return files.Count > 0 ? files[0].TryGetLocalPath() : null;
     }
 
-    public static Separator Rule() => new() { Margin = new Thickness(0, 4), Background = (IBrush)Application.Current!.FindResource("EdgeBrush")! };
+    public static Separator Rule() => new() { Margin = new Thickness(0, 4), Classes = { "rule" } };
 
     public static ScrollViewer Scroll(Control content, double maxHeight) => new()
     {

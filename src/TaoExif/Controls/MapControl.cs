@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using TaoExif.Core;
 
@@ -18,8 +19,10 @@ public sealed class MapControl : Control
     public const int MinZoom = 1;
     public const int MaxZoom = 19;
 
-    private static readonly IBrush Background = new SolidColorBrush(Color.Parse("#FF15161A"));
-    private static readonly IBrush TileGapBrush = new SolidColorBrush(Color.Parse("#FF1E2024"));
+    private static readonly IBrush DarkBackground = new SolidColorBrush(Color.Parse("#FF15161A"));
+    private static readonly IBrush DarkTileGap = new SolidColorBrush(Color.Parse("#FF1E2024"));
+    private static readonly IBrush LightBackground = new SolidColorBrush(Color.Parse("#FFE4E6EA"));
+    private static readonly IBrush LightTileGap = new SolidColorBrush(Color.Parse("#FFEDEFF2"));
     private static readonly IBrush MarkerBrush = new SolidColorBrush(Color.Parse("#FFE0A040"));
     private static readonly IBrush MarkerHighlightBrush = new SolidColorBrush(Color.Parse("#FFFF5A4A"));
     private static readonly IPen MarkerPen = new Pen(new SolidColorBrush(Color.Parse("#FF15161A")), 1.5);
@@ -158,10 +161,19 @@ public sealed class MapControl : Control
 
     // ---------- rendering ----------
 
+    private bool IsDark => ActualThemeVariant == ThemeVariant.Dark;
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == ThemeVariantScope.ActualThemeVariantProperty)
+            InvalidateVisual();
+    }
+
     public override void Render(DrawingContext context)
     {
         var bounds = new Rect(Bounds.Size);
-        context.FillRectangle(Background, bounds);
+        context.FillRectangle(IsDark ? DarkBackground : LightBackground, bounds);
         DrawTiles(context);
         DrawTrack(context);
         DrawMarkers(context);
@@ -193,12 +205,13 @@ public sealed class MapControl : Control
                 }
                 else
                 {
-                    context.FillRectangle(TileGapBrush, dest.Deflate(0.5));
+                    context.FillRectangle(IsDark ? DarkTileGap : LightTileGap, dest.Deflate(0.5));
                 }
             }
         }
-        // a light dim keeps the bright OSM tiles closer to the dark UI
-        context.FillRectangle(DimBrush, new Rect(Bounds.Size));
+        // in dark mode a light dim keeps the bright OSM tiles closer to the UI
+        if (IsDark)
+            context.FillRectangle(DimBrush, new Rect(Bounds.Size));
     }
 
     private void DrawTrack(DrawingContext context)

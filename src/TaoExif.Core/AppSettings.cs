@@ -28,6 +28,14 @@ public sealed class CommandPreset
 public sealed class AppSettings
 {
     public string? ExifToolPath { get; set; }
+
+    /// <summary>"System" (follow the OS), "Light" or "Dark".</summary>
+    public string Theme { get; set; } = "System";
+
+    /// <summary>"Off", "Notify" or "Install" (download in the background, install when TaoExif closes).</summary>
+    public string UpdateMode { get; set; } = "Notify";
+    public DateTime? LastUpdateCheck { get; set; }
+    public string? SkippedVersion { get; set; }
     public string? LastFolder { get; set; }
     public bool ThumbnailView { get; set; }
     public bool OverwriteOriginal { get; set; } = true;
@@ -95,11 +103,6 @@ public sealed class AppSettings
         new() { Name = "List makernotes", Arguments = "-G1 -s -makernotes:all" },
     ];
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true,
-        NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-    };
 
     public static string ConfigDirectory =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TaoExif");
@@ -112,7 +115,7 @@ public sealed class AppSettings
         try
         {
             if (File.Exists(path))
-                return JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(path), JsonOptions) ?? new AppSettings();
+                return JsonSerializer.Deserialize(File.ReadAllText(path), SettingsJsonContext.Default.AppSettings) ?? new AppSettings();
         }
         catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException)
         {
@@ -126,7 +129,12 @@ public sealed class AppSettings
         path ??= DefaultPath;
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         string tmp = path + ".tmp";
-        File.WriteAllText(tmp, JsonSerializer.Serialize(this, JsonOptions));
+        File.WriteAllText(tmp, JsonSerializer.Serialize(this, SettingsJsonContext.Default.AppSettings));
         File.Move(tmp, path, true);
     }
 }
+
+/// <summary>Source-generated JSON for the settings, so trimmed builds (the CLI) can read them too.</summary>
+[JsonSourceGenerationOptions(WriteIndented = true, NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals)]
+[JsonSerializable(typeof(AppSettings))]
+internal sealed partial class SettingsJsonContext : JsonSerializerContext;

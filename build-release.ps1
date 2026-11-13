@@ -8,6 +8,7 @@
     TaoExif-<v>-macos-arm64.zip      macOS app, Apple silicon
     TaoExif-<v>-macos-x64.zip        macOS app, Intel
     SHA256SUMS.txt
+  Every package has the app (TaoExif) and the command-line tool (taoexif-cli).
   The Linux and macOS packages are made in WSL (packaging/package-unix.sh) for Unix permissions and dpkg-deb.
 #>
 param(
@@ -33,6 +34,10 @@ foreach ($rid in 'win-x64', 'linux-x64', 'osx-arm64', 'osx-x64') {
     dotnet publish src/TaoExif/TaoExif.csproj -c Release -r $rid --self-contained -p:PublishSingleFile=true `
         -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -o $out -v q -nologo
     if ($LASTEXITCODE -ne 0) { throw "publish $rid failed" }
+    # the command-line tool goes next to the app and shares its exiftool folder
+    dotnet publish src/TaoExif.Cli/TaoExif.Cli.csproj -c Release -r $rid --self-contained -p:PublishSingleFile=true `
+        -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -o $out -v q -nologo
+    if ($LASTEXITCODE -ne 0) { throw "publish cli $rid failed" }
 }
 
 # Windows installer + portable zip

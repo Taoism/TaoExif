@@ -467,6 +467,14 @@ public sealed class ExifToolService : IDisposable
         return _main.ExecuteAsync(args, ct);
     }
 
+    /// <summary>Runs exiftool with these exact arguments, then the files.</summary>
+    public Task<ExifToolResult> RunArgsAsync(IReadOnlyList<string> exifArgs, IReadOnlyList<string> files, CancellationToken ct = default)
+    {
+        var args = new List<string>(exifArgs);
+        args.AddRange(files);
+        return _main.ExecuteAsync(args, ct);
+    }
+
     /// <summary>Runs a user-typed exiftool command line against the files.</summary>
     public Task<ExifToolResult> RunRawAsync(string commandLine, IReadOnlyList<string> files, CancellationToken ct = default)
     {

@@ -31,6 +31,7 @@ DEB="$WORK/deb"
 mkdir -p "$DEB/DEBIAN" "$DEB/opt/taoexif" "$DEB/usr/bin" "$DEB/usr/share/applications" "$DEB/usr/share/doc/taoexif"
 cp -r "$PUB/linux-x64/." "$DEB/opt/taoexif/"
 ln -s /opt/taoexif/TaoExif "$DEB/usr/bin/taoexif"
+ln -s /opt/taoexif/taoexif-cli "$DEB/usr/bin/taoexif-cli"
 cp "$PKG/linux/taoexif.desktop" "$DEB/usr/share/applications/"
 for s in 48 128 256 512; do
   mkdir -p "$DEB/usr/share/icons/hicolor/${s}x${s}/apps"
@@ -48,7 +49,7 @@ done
   echo
   cat "$ROOT/THIRD-PARTY-NOTICES.txt"
 } > "$DEB/usr/share/doc/taoexif/copyright"
-fix_modes "$DEB" "$DEB/opt/taoexif/TaoExif" "$DEB/opt/taoexif/exiftool/exiftool"
+fix_modes "$DEB" "$DEB/opt/taoexif/TaoExif" "$DEB/opt/taoexif/taoexif-cli" "$DEB/opt/taoexif/exiftool/exiftool"
 
 SIZE_KB=$(du -sk "$DEB" --exclude=DEBIAN | cut -f1)
 cat > "$DEB/DEBIAN/control" <<EOF
@@ -69,6 +70,7 @@ Description: dark-mode GUI for ExifTool
  removing metadata, and a command box for raw exiftool commands.
  .
  ExifTool is bundled; an installed libimage-exiftool-perl is used when present.
+ The taoexif-cli command offers the same operations for scripts.
 EOF
 chmod 644 "$DEB/DEBIAN/control"
 dpkg-deb --root-owner-group -Zxz --build "$DEB" "$OUT/taoexif_${VERSION}_amd64.deb" >/dev/null
@@ -79,7 +81,7 @@ T="$WORK/tar/TaoExif-$VERSION-linux-x64"
 mkdir -p "$T"
 cp -r "$PUB/linux-x64/." "$T/"
 cp "$ROOT/LICENSE" "$ROOT/README.md" "$T/"
-fix_modes "$WORK/tar" "$T/TaoExif" "$T/exiftool/exiftool"
+fix_modes "$WORK/tar" "$T/TaoExif" "$T/taoexif-cli" "$T/exiftool/exiftool"
 tar --owner=0 --group=0 -C "$WORK/tar" -czf "$OUT/TaoExif-$VERSION-linux-x64.tar.gz" "TaoExif-$VERSION-linux-x64"
 echo "built TaoExif-$VERSION-linux-x64.tar.gz"
 
@@ -94,7 +96,7 @@ for rid in osx-arm64 osx-x64; do
   sed "s/@VERSION@/$VERSION/g" "$PKG/macos/Info.plist" > "$APP/Info.plist"
   printf 'APPL????' > "$APP/PkgInfo"
   cp "$ROOT/LICENSE" "$ROOT/README.md" "$M/"
-  fix_modes "$M" "$APP/MacOS/TaoExif" "$APP/MacOS/exiftool/exiftool"
+  fix_modes "$M" "$APP/MacOS/TaoExif" "$APP/MacOS/taoexif-cli" "$APP/MacOS/exiftool/exiftool"
   # zip keeping Unix permissions (Finder's Archive Utility honours them)
   python3 - "$M" "$OUT/TaoExif-$VERSION-macos-$arch.zip" <<'PY'
 import os, sys, zipfile

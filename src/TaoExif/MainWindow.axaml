@@ -58,12 +58,13 @@
       </MenuItem>
       <MenuItem Header="_Help">
         <MenuItem Header="exiftool tag _names (web)" Click="OnTagNamesHelp" />
+        <MenuItem Header="Check for _updates…" Click="OnCheckUpdates" />
         <MenuItem Header="_About TaoExif" Click="OnAbout" />
       </MenuItem>
     </Menu>
 
     <!-- toolbar -->
-    <Border DockPanel.Dock="Top" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource EdgeBrush}" BorderThickness="0,1" Padding="8,6">
+    <Border DockPanel.Dock="Top" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource EdgeBrush}" BorderThickness="0,1" Padding="8,6">
       <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto,Auto" ColumnSpacing="6">
         <Button Grid.Column="0" ToolTip.Tip="Open folder (Ctrl+O)" AutomationProperties.Name="Open folder" Click="OnOpenFolder">
           <PathIcon Data="{StaticResource IconFolder}" Width="16" Height="16" />
@@ -86,9 +87,10 @@
     </Border>
 
     <!-- status bar -->
-    <Border DockPanel.Dock="Bottom" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource EdgeBrush}" BorderThickness="0,1,0,0" Padding="10,4">
-      <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="14">
+    <Border DockPanel.Dock="Bottom" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource EdgeBrush}" BorderThickness="0,1,0,0" Padding="10,4">
+      <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="14">
         <TextBlock x:Name="StatusText" Text="Ready" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+        <Button Grid.Column="4" x:Name="UpdateButton" Classes="small accent" IsVisible="False" Click="OnUpdateButton" />
         <ProgressBar Grid.Column="1" x:Name="Busy" IsIndeterminate="True" Width="120" Height="4" IsVisible="False" VerticalAlignment="Center" />
         <TextBlock Grid.Column="2" x:Name="SelectionText" Classes="muted" VerticalAlignment="Center" />
         <TextBlock Grid.Column="3" x:Name="VersionText" Classes="muted" VerticalAlignment="Center" />
@@ -160,7 +162,7 @@
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="vm:FileItem">
                 <StackPanel Width="150" Spacing="4">
-                  <Border Width="150" Height="112" Background="#FF17181B" CornerRadius="3" ClipToBounds="True">
+                  <Border Width="150" Height="112" Background="{DynamicResource ThumbBackgroundBrush}" CornerRadius="3" ClipToBounds="True">
                     <LayoutTransformControl HorizontalAlignment="Center" VerticalAlignment="Center">
                       <LayoutTransformControl.LayoutTransform>
                         <RotateTransform Angle="{Binding Rotation}" />
@@ -187,7 +189,7 @@
           <RowDefinition Height="6" />
           <RowDefinition Height="*" MinHeight="200" />
         </Grid.RowDefinitions>
-        <Border Classes="panel" Background="#FF141518" ClipToBounds="True">
+        <Border Classes="panel" Background="{DynamicResource PreviewBackgroundBrush}" ClipToBounds="True">
           <Panel x:Name="PreviewPanel" Background="Transparent">
             <LayoutTransformControl x:Name="PreviewTransform" HorizontalAlignment="Center" VerticalAlignment="Center">
               <Image x:Name="PreviewImage" Stretch="Uniform" />
@@ -241,7 +243,7 @@
                       <Grid ColumnDefinitions="130,*" Margin="0,2" ColumnSpacing="8">
                         <StackPanel VerticalAlignment="Center">
                           <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
-                                     Foreground="{Binding IsModified, Converter={x:Static local:Converters.ModifiedBrush}}" />
+                                     Classes.modified="{Binding IsModified}" />
                           <TextBlock Text="{Binding Tag}" Classes="muted" FontSize="10.5" TextTrimming="CharacterEllipsis" />
                         </StackPanel>
                         <TextBox Grid.Column="1" Text="{Binding Value, Mode=TwoWay}" PlaceholderText="{Binding Hint}" />

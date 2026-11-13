@@ -31,6 +31,7 @@ public sealed partial class MainWindow : Window
     {
         _startPath = startPath;
         _settings = AppSettings.Load();
+        App.ApplyTheme(_settings.Theme);
         InitializeComponent();
         Icon = AppIcon;
         RestoreWindowState();
@@ -55,6 +56,7 @@ public sealed partial class MainWindow : Window
         Map.CenterOn(_settings.MapLatitude, _settings.MapLongitude, _settings.MapZoom);
 
         await StartExifToolAsync();
+        _ = AutoCheckUpdatesAsync();
 
         string? folder = _startPath ?? _settings.LastFolder;
         if (folder != null && File.Exists(folder))
@@ -163,6 +165,7 @@ public sealed partial class MainWindow : Window
         SaveSettings();
         _folderCts?.Cancel();
         _exif?.Dispose();
+        InstallPendingUpdateOnExit();
     }
 
     private void SaveSettings()
@@ -282,7 +285,7 @@ public sealed partial class MainWindow : Window
 
     private void OnTagNamesHelp(object? sender, RoutedEventArgs e) => OpenUrl("https://exiftool.org/TagNames/");
 
-    private static void OpenUrl(string url)
+    internal static void OpenUrl(string url)
     {
         try
         {

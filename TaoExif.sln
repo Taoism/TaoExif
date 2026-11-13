@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaoExif", "src\TaoExif\TaoE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaoExif.Tests", "tests\TaoExif.Tests\TaoExif.Tests.csproj", "{418364B0-3FEB-4AC2-BCF0-76EB5F0DD1D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaoExif.Cli", "src\TaoExif.Cli\TaoExif.Cli.csproj", "{89403403-193C-4D86-8449-5D3EED4F4346}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{418364B0-3FEB-4AC2-BCF0-76EB5F0DD1D2}.Release|x64.Build.0 = Release|Any CPU
 		{418364B0-3FEB-4AC2-BCF0-76EB5F0DD1D2}.Release|x86.ActiveCfg = Release|Any CPU
 		{418364B0-3FEB-4AC2-BCF0-76EB5F0DD1D2}.Release|x86.Build.0 = Release|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Debug|x64.Build.0 = Debug|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Debug|x86.Build.0 = Debug|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Release|x64.ActiveCfg = Release|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Release|x64.Build.0 = Release|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Release|x86.ActiveCfg = Release|Any CPU
+		{89403403-193C-4D86-8449-5D3EED4F4346}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -46,7 +46,12 @@ To build all of these yourself, run `./build-release.ps1` (Windows with Inno Set
   dates, rename, geotag, export, open, show in folder.
 - **Remove metadata** with ExifToolGui-style choices: remove everything (keeping only what you untick), or just
   chosen groups (EXIF, maker notes, GPS, IFD1, XMP and its sub-groups, IPTC, Photoshop, JFIF, ICC profile).
-- Dark everywhere, including the message boxes and dialogs.
+- **Light, dark, or follow the system**: by default the theme follows the operating system and switches live
+  when the OS changes. Dark mode is dark everywhere, including the message boxes and dialogs.
+- **Updates**: checks GitHub once a day. Choose off, notify, or install automatically. Downloads are checked
+  against the release's SHA-256 list before anything runs. The Windows installer version updates itself (when
+  you close TaoExif, or straight away with *Restart now*). Other packages get the verified download.
+- **Command line**: `taoexif-cli` for scripts (see below).
 
 | Thumbnails and map | Remove metadata |
 |---|---|
@@ -54,6 +59,33 @@ To build all of these yourself, run `./build-release.ps1` (Windows with Inno Set
 
 exiftool runs as a persistent `-stay_open` process, so reads are fast, and file names are passed as UTF-8, so
 non-ASCII paths work on Windows.
+
+## Command line
+
+Every package includes `taoexif-cli`, which uses the same engine and bundled ExifTool as the app:
+
+- **Windows**: next to `TaoExif.exe`. The installer can add it to PATH.
+- **Debian/Ubuntu**: `/usr/bin/taoexif-cli`.
+- **macOS**: `TaoExif.app/Contents/MacOS/taoexif-cli`. To use it from anywhere, run
+  `sudo ln -s /Applications/TaoExif.app/Contents/MacOS/taoexif-cli /usr/local/bin/`.
+
+```
+taoexif-cli info photo.jpg                                    # every tag, as Group:Tag : value
+taoexif-cli get -t Model -t DateTimeOriginal -r ~/Pictures --json
+taoexif-cli set -t XMP-dc:Title="Sunset" -t IFD0:Artist="Me" *.jpg
+taoexif-cli remove --all --keep ICC_Profile,GPS photos/       # same choices as the Remove metadata dialog
+taoexif-cli shift --by "+0:0:0 1:00:00" -r trip/
+taoexif-cli rename --dry-run --format "%Y%m%d_%H%M%S%%-c.%%e" .
+taoexif-cli gps set --lat 48.8584 --lon 2.2945 eiffel.jpg
+taoexif-cli geotag --track ride.gpx --sync +1:00:00 *.jpg
+taoexif-cli export --csv -r photos/ -o metadata.csv
+taoexif-cli run -G1 -s -time:all -- photo.jpg                 # any exiftool arguments
+taoexif-cli update --check                                    # exit code 10 when a newer TaoExif exists
+```
+
+Folders are expanded (add `-r` to include subfolders; `--ext jpg,cr2` limits the file types), and wildcards work
+in cmd.exe too. `get`, `info`, `gps show`, `version` and `update` take `--json`. Exit codes: 0 ok, 1 exiftool
+reported errors, 2 bad usage, 3 exiftool not found. `taoexif-cli help <command>` shows the details.
 
 ## ExifTool
 
@@ -85,6 +117,7 @@ dotnet publish src/TaoExif -c Release -r osx-arm64 --self-contained -p:PublishSi
 
 ## Layout
 
+- `src/TaoExif.Cli`: `taoexif-cli`.
 - `src/TaoExif.Core`: the exiftool process wrapper (`ExifToolProcess`), the high-level operations
   (`ExifToolService`), settings, and the GPX reader. It has no UI dependencies.
 - `src/TaoExif`: the Avalonia app (main window split into `MainWindow.*.cs`, dialogs, map control, theme).

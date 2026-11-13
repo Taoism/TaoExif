@@ -1,21 +1,21 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Style Selector="Window">
-    <Setter Property="Background" Value="{StaticResource AppBackgroundBrush}" />
-    <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     <Setter Property="FontSize" Value="13" />
   </Style>
   <Style Selector="TextBlock.muted">
-    <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
   </Style>
   <Style Selector="TextBlock.header">
     <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
     <Setter Property="Margin" Value="2,0,0,4" />
   </Style>
   <Style Selector="Border.panel">
-    <Setter Property="Background" Value="{StaticResource PanelBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource EdgeBrush}" />
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource EdgeBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="4" />
   </Style>
@@ -28,13 +28,13 @@
     <Setter Property="MinHeight" Value="24" />
   </Style>
   <Style Selector="Button.accent">
-    <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
     <Setter Property="Foreground" Value="White" />
-    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
   </Style>
   <Style Selector="Button.accent:pointerover /template/ ContentPresenter">
-    <Setter Property="Background" Value="#FF4A8CE3" />
-    <Setter Property="BorderBrush" Value="#FF4A8CE3" />
+    <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
     <Setter Property="Foreground" Value="White" />
   </Style>
   <Style Selector="TextBox">
@@ -49,7 +49,7 @@
     <Setter Property="MinHeight" Value="28" />
   </Style>
   <Style Selector="GridSplitter">
-    <Setter Property="Background" Value="{StaticResource AppBackgroundBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}" />
   </Style>
   <Style Selector="TabControl">
     <Setter Property="Padding" Value="0,4,0,0" />
@@ -60,8 +60,8 @@
     <Setter Property="Padding" Value="10,0" />
   </Style>
   <Style Selector="DataGrid">
-    <Setter Property="Background" Value="{StaticResource PanelBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource EdgeBrush}" />
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource EdgeBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="GridLinesVisibility" Value="None" />
     <Setter Property="HeadersVisibility" Value="Column" />
@@ -78,16 +78,25 @@
     <Setter Property="MinHeight" Value="28" />
   </Style>
   <Style Selector="TreeView">
-    <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
   </Style>
   <Style Selector="TreeViewItem">
     <Setter Property="MinHeight" Value="26" />
     <Setter Property="FontSize" Value="13" />
   </Style>
   <Style Selector="ListBox">
-    <Setter Property="Background" Value="{StaticResource PanelBrush}" />
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+  </Style>
+  <Style Selector="TextBlock.modified">
+    <Setter Property="Foreground" Value="{DynamicResource ModifiedBrush}" />
+  </Style>
+  <Style Selector="Border.footer">
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+  </Style>
+  <Style Selector="Separator.rule">
+    <Setter Property="Background" Value="{DynamicResource EdgeBrush}" />
   </Style>
   <Style Selector="Menu">
-    <Setter Property="Background" Value="{StaticResource AppBackgroundBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}" />
   </Style>
 </Styles>

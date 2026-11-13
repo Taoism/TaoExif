@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TaoExif.Core\TaoExif.Core.csproj" />
+    <ProjectReference Include="..\..\src\TaoExif.Cli\TaoExif.Cli.csproj" />
   </ItemGroup>
 
   <Import Project="../../build/ExifToolBundle.targets" />
